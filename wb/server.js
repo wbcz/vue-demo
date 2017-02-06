@@ -1,11 +1,14 @@
 const http = require('http');
 const exec = require('exec');
 const requester = require('request');
+const path = require('path');
 const until = require('./until');
+const saveFile = path.join(__dirname, './releaseVersion.txt');
+
 
 let deployServer = http.createServer(function(request, response) {
-  let branchNames = [];
-  let i = 0;
+  //let branchNames = [];
+  let index = 0;
   setInterval(trrigerRelease, 5000);
 
   trrigerRelease()
@@ -22,9 +25,19 @@ let deployServer = http.createServer(function(request, response) {
     }
 
     function unique(branchName) {
-      console.log(branchName)
-      let res = branchNames.includes(branchName) ? false : true;
-      branchNames.push(timer);
+      let getFileData = until.readFileAsync(saveFile);
+      try {
+        getFileData = JSON.parse(getFileData)
+        console.log(data)
+      } catch(e) {
+        getFileData = []
+      }
+      console.log(getFileData)
+      let res = getFileData.includes(branchName) ? false : true;
+      let obj = {};
+      obj.(index++) = branchName;
+      branchName = JSON.stringify(branchName);
+      until.writeFileAsync(saveFile, branchName);
       return res;
     }
 
