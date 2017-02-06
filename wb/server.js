@@ -1,5 +1,4 @@
 const http = require('http');
-const nodemailer = require('nodemailer');
 const exec = require('exec');
 const requester = require('request');
 const config = require('./config');
@@ -36,7 +35,7 @@ let deployServer = http.createServer(function(request, response) {
         }
         let date = (timestamp.getFullYear()) + sysmbol +
               (toNum(timestamp.getMonth() + 1)) + sysmbol +
-              (toNum(timestamp.getDate()+13)) + sysmbol;
+              (toNum(timestamp.getDate()+14)) + sysmbol;
               console.log(date)
               return date;
     }());
@@ -48,11 +47,10 @@ let deployServer = http.createServer(function(request, response) {
         'git checkout -b release/' + timer,
         'git add .',
         'git commit -m ' + timer,
-        'git checkout -b release/' + timer,
       	// 'git tag -a ' + timer + ' -m ""',
       	'git push origin release/' + timer + ':release/' + timer,
         'git checkout master',
-        'git branch -d release/' + timer
+        //'git branch -d release/' + timer
       ].join(' && ')
 
       console.log(command)
