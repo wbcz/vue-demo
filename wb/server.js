@@ -31,13 +31,13 @@ let deployServer = http.createServer(function(request, response) {
         getFileData = JSON.parse(getFileData)
         console.log(data)
       } catch(e) {
-        getFileData = []
+        getFileData = {}
       }
       console.log(getFileData)
       let res = getFileData.includes(branchName) ? false : true;
-      let obj = {};
-      obj[index++] = branchName;
-      branchName = JSON.stringify(branchName);
+
+      getFileData[index++] = branchName;
+      branchName = JSON.stringify(obj);
       until.writeFileAsync(saveFile, branchName);
       return res;
     }
