@@ -53,7 +53,7 @@ let deployServer = http.createServer(function(request, response) {
 
       //console.log(command)
 
-      return unique() && exec(command, function(err, out, code) {
+      return unique(timer) && exec(command, function(err, out, code) {
           if (err instanceof Error) {
             throw err
           }
