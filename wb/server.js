@@ -4,7 +4,8 @@ const requester = require('request');
 
 let deployServer = http.createServer(function(request, response) {
   let branchNames = [];
-  //setInterval(trrigerRelease, 3600000);
+  let i = 0;
+  setInterval(trrigerRelease, 5000);
 
   trrigerRelease()
 
@@ -20,6 +21,7 @@ let deployServer = http.createServer(function(request, response) {
     }
 
     function unique(branchName) {
+      console.log(branchName)
       let res = branchNames.includes(branchName) ? false : true;
       branchNames.push(timer);
       return res;
@@ -33,7 +35,7 @@ let deployServer = http.createServer(function(request, response) {
         }
         let date = (timestamp.getFullYear()) + sysmbol +
               (toNum(timestamp.getMonth() + 4)) + sysmbol +
-              (toNum(timestamp.getDate()+3)) + sysmbol;
+              (toNum(timestamp.getDate()+(++i)) + sysmbol;
               console.log(date)
               return date;
     }());
@@ -49,7 +51,7 @@ let deployServer = http.createServer(function(request, response) {
         'git branch -d release/' + timer
       ].join(' && ')
 
-      console.log(command)
+      //console.log(command)
 
       return unique() && exec(command, function(err, out, code) {
           if (err instanceof Error) {
@@ -57,7 +59,7 @@ let deployServer = http.createServer(function(request, response) {
           }
           console.log('分支：' + 'release/' + timer + '  already create')
           //process.stderr.write(err)
-          process.stdout.write(out)
+          //process.stdout.write(out)
         })
 
     }())
