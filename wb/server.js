@@ -1,8 +1,6 @@
 const http = require('http');
 const exec = require('exec');
 const requester = require('request');
-const config = require('./config');
-console.log(config)
 
 let deployServer = http.createServer(function(request, response) {
   let branchNames = [];
@@ -46,7 +44,6 @@ let deployServer = http.createServer(function(request, response) {
       command = [
         'git checkout -b release/' + timer,
         'git stash',
-      	// 'git tag -a ' + timer + ' -m ""',
       	'git push origin release/' + timer + ':release/' + timer,
         'git checkout master',
         'git branch -d release/' + timer
@@ -59,12 +56,8 @@ let deployServer = http.createServer(function(request, response) {
             throw err
           }
           console.log('分支：' + 'release/' + timer + '  already create')
-          // console.log(code, 'code')
-          // console.log(out, 'out')
-          //console.log(err, 'err')
           //process.stderr.write(err)
           process.stdout.write(out)
-          //process.exit(code);
         })
 
     }())
