@@ -1,8 +1,10 @@
 const http = require('http');
 const exec = require('exec');
 const requester = require('request');
+const Promise = require('bluebird');
 const path = require('path');
 const until = require('./until');
+const request = Promise.promisify(require('request'));
 const saveFile = path.join(__dirname, './releaseVersion.txt');
 
 
@@ -26,22 +28,30 @@ let deployServer = http.createServer(function(request, response) {
     }
 
     function unique(branchName) {
-      let getFileData = until.readFileAsync(saveFile);
-      try {
-        getFileData = JSON.parse(getFileData)
-        console.log(data)
-      } catch(e) {
-        getFileData = {}
-      }
-      console.log(getFileData)
-      let res = getFileData.includes(branchName) ? false : true;
-
-      getFileData[index++] = branchName;
-      branchName = JSON.stringify(obj);
-      until.writeFileAsync(saveFile, branchName);
-      return res;
+      return until.readFileAsync(saveFile).then(function(data, getFileData = null) {
+        try {
+            getFileData = JSON.parse(data);
+            console.log(data,'data')
+          } catch(e) {
+            getFileData = {}
+        }
+        return Promise.resolve(getFileData)
+      }).then(function(getFileData, res){
+        console.log(getFileData, 'getFileData')
+        for(var attr in getFileData) {
+          if(getFileData[attr] == branchName) {
+            res = true;
+          } else {
+            res = false;
+          }
+        }
+        getFileData['index'+ [index++]] = branchName;
+        branchName = JSON.stringify(getFileData);
+        until.writeFileAsync(saveFile, branchName);
+        return res;
+      })
     }
-
+    console.log(unique(),'uoooo')
     //取得分支编号
     let timer = true && (function(sysmbol= "") {
         let timestamp = new Date(Date.now());
