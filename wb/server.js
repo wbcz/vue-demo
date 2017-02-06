@@ -34,8 +34,8 @@ let deployServer = http.createServer(function(request, response) {
           return num < 9 ? '0' + num: num;
         }
         let date = (timestamp.getFullYear()) + sysmbol +
-              (toNum(timestamp.getMonth() + 1)) + sysmbol +
-              (toNum(timestamp.getDate()+14)) + sysmbol;
+              (toNum(timestamp.getMonth() + 4)) + sysmbol +
+              (toNum(timestamp.getDate()+3)) + sysmbol;
               console.log(date)
               return date;
     }());
@@ -45,8 +45,7 @@ let deployServer = http.createServer(function(request, response) {
 
       command = [
         'git checkout -b release/' + timer,
-        'git add .',
-        'git commit -m ' + timer,
+        'git stash',
       	// 'git tag -a ' + timer + ' -m ""',
       	'git push origin release/' + timer + ':release/' + timer,
         'git checkout master',
@@ -54,8 +53,6 @@ let deployServer = http.createServer(function(request, response) {
       ].join(' && ')
 
       console.log(command)
-
-
 
       return unique() && exec(command, function(err, out, code) {
           if (err instanceof Error) {
@@ -71,6 +68,31 @@ let deployServer = http.createServer(function(request, response) {
         })
 
     }())
+    setTimeout(function(){
+      let command = true && (function(command) {
+
+      command = [
+        'git branch -d release/' + timer
+      ].join(' && ')
+
+      console.log(command)
+      
+      return unique() && exec(command, function(err, out, code) {
+          if (err instanceof Error) {
+            throw err
+          }
+          console.log('分支：' + 'release/' + timer + '  already create')
+          // console.log(code, 'code')
+          // console.log(out, 'out')
+          //console.log(err, 'err')
+          //process.stderr.write(err)
+          process.stdout.write(out)
+          console.log(11111)
+          //process.exit(code);
+        })
+
+    }())
+    },4000)
 
     //发送邮件
     let sendEmail = false && requester(config, function(err, body) {
