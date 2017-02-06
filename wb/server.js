@@ -12,6 +12,7 @@ let deployServer = http.createServer(function(request, response) {
   //let branchNames = [];
   let index = 0;
   let i = 0;
+  let res;
   setInterval(trrigerRelease, 5000);
 
   trrigerRelease()
@@ -27,8 +28,8 @@ let deployServer = http.createServer(function(request, response) {
       return sendWeek.includes(date.getDay()) && sendHour.includes(date.getHours());
     }
 
-    function unique(branchName) {
-      return until.readFileAsync(saveFile).then(function(data, getFileData = null) {
+    let createBranch = createBranchTime && (function unique(branchName) {
+      until.readFileAsync(saveFile).then(function(data, getFileData = null) {
         try {
             getFileData = JSON.parse(data);
             console.log(data,'data')
@@ -36,7 +37,7 @@ let deployServer = http.createServer(function(request, response) {
             getFileData = {}
         }
         return Promise.resolve(getFileData)
-      }).then(function(getFileData, res){
+      }).then(function(getFileData){
         console.log(getFileData, 'getFileData')
         for(var attr in getFileData) {
           if(getFileData[attr] == branchName) {
@@ -46,49 +47,48 @@ let deployServer = http.createServer(function(request, response) {
           }
         }
         getFileData['index'+ [index++]] = branchName;
+        console.log(getFileData,'getFileData')
         branchName = JSON.stringify(getFileData);
         until.writeFileAsync(saveFile, branchName);
-        return res;
+        return Promise.resolve(res)
+      }).then(function(res) {
+
+        //取得分支编号
+        let timer = true && (function(sysmbol= "") {
+            let timestamp = new Date(Date.now());
+            function toNum (num) {
+              return num < 9 ? '0' + num: num;
+            }
+            let date = (timestamp.getFullYear()) + sysmbol +
+                  (toNum(timestamp.getMonth() + 4)) + sysmbol +
+                  (toNum(timestamp.getDate()+(++i))) + sysmbol;
+                  console.log(date)
+                  return date;
+        }());
+
+        //创建分支编号命令，并且推送
+        let command = (function(command) {
+          command = [
+            'git checkout -b release/' + timer,
+            'git stash',
+            'git push origin release/' + timer + ':release/' + timer,
+            'git checkout master',
+            'git branch -d release/' + timer
+          ].join(' && ')
+
+          //console.log(command)
+
+          return res && exec(command, function(err, out, code) {
+              if (err instanceof Error) {
+                throw err
+              }
+              console.log('分支：' + 'release/' + timer + '  already create')
+              //process.stderr.write(err)
+              //process.stdout.write(out)
+            })
+        }())
+
       })
-    }
-    console.log(unique(),'uoooo')
-    //取得分支编号
-    let timer = true && (function(sysmbol= "") {
-        let timestamp = new Date(Date.now());
-        function toNum (num) {
-          return num < 9 ? '0' + num: num;
-        }
-        let date = (timestamp.getFullYear()) + sysmbol +
-              (toNum(timestamp.getMonth() + 4)) + sysmbol +
-              (toNum(timestamp.getDate()+(++i))) + sysmbol;
-              console.log(date)
-              return date;
-    }());
-
-    //创建分支编号命令，并且推送
-    let command = true && (function(command) {
-
-      command = [
-        'git checkout -b release/' + timer,
-        'git stash',
-      	'git push origin release/' + timer + ':release/' + timer,
-        'git checkout master',
-        'git branch -d release/' + timer
-      ].join(' && ')
-
-
-
-      //console.log(command)
-
-      return unique(timer) && exec(command, function(err, out, code) {
-          if (err instanceof Error) {
-            throw err
-          }
-          console.log('分支：' + 'release/' + timer + '  already create')
-          //process.stderr.write(err)
-          //process.stdout.write(out)
-        })
-
     }())
 
     //发送邮件
@@ -100,6 +100,6 @@ let deployServer = http.createServer(function(request, response) {
     response.end('yes');
 
   }
-})
+}
 
 deployServer.listen(9999)
