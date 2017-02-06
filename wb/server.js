@@ -9,6 +9,7 @@ const saveFile = path.join(__dirname, './releaseVersion.txt');
 let deployServer = http.createServer(function(request, response) {
   //let branchNames = [];
   let index = 0;
+  let i = 0;
   setInterval(trrigerRelease, 5000);
 
   trrigerRelease()
@@ -35,7 +36,7 @@ let deployServer = http.createServer(function(request, response) {
       console.log(getFileData)
       let res = getFileData.includes(branchName) ? false : true;
       let obj = {};
-      obj.(index++) = branchName;
+      obj[index++] = branchName;
       branchName = JSON.stringify(branchName);
       until.writeFileAsync(saveFile, branchName);
       return res;
