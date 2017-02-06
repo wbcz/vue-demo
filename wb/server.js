@@ -35,7 +35,7 @@ let deployServer = http.createServer(function(request, response) {
         }
         let date = (timestamp.getFullYear()) + sysmbol +
               (toNum(timestamp.getMonth() + 4)) + sysmbol +
-              (toNum(timestamp.getDate()+(++i)) + sysmbol;
+              (toNum(timestamp.getDate()+(++i))) + sysmbol;
               console.log(date)
               return date;
     }());
@@ -50,6 +50,8 @@ let deployServer = http.createServer(function(request, response) {
         'git checkout master',
         'git branch -d release/' + timer
       ].join(' && ')
+
+
 
       //console.log(command)
 
