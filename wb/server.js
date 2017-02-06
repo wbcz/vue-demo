@@ -49,34 +49,11 @@ let deployServer = http.createServer(function(request, response) {
       	// 'git tag -a ' + timer + ' -m ""',
       	'git push origin release/' + timer + ':release/' + timer,
         'git checkout master',
-        //'git branch -d release/' + timer
-      ].join(' && ')
-
-      console.log(command)
-
-      return unique() && exec(command, function(err, out, code) {
-          if (err instanceof Error) {
-            throw err
-          }
-          console.log('分支：' + 'release/' + timer + '  already create')
-          // console.log(code, 'code')
-          // console.log(out, 'out')
-          //console.log(err, 'err')
-          //process.stderr.write(err)
-          process.stdout.write(out)
-          //process.exit(code);
-        })
-
-    }())
-    setTimeout(function(){
-      let command = true && (function(command) {
-
-      command = [
         'git branch -d release/' + timer
       ].join(' && ')
 
       console.log(command)
-      
+
       return unique() && exec(command, function(err, out, code) {
           if (err instanceof Error) {
             throw err
@@ -87,12 +64,10 @@ let deployServer = http.createServer(function(request, response) {
           //console.log(err, 'err')
           //process.stderr.write(err)
           process.stdout.write(out)
-          console.log(11111)
           //process.exit(code);
         })
 
     }())
-    },4000)
 
     //发送邮件
     let sendEmail = false && requester(config, function(err, body) {
