@@ -10,7 +10,6 @@ const saveFile = path.join(__dirname, './releaseVersion.txt');
 
 let deployServer = http.createServer(function(request, response) {
   //let branchNames = [];
-  let index = 0;
   let i = 0;
   let res;
   setInterval(trrigerRelease, 5000);
@@ -28,7 +27,21 @@ let deployServer = http.createServer(function(request, response) {
       return sendWeek.includes(date.getDay()) && sendHour.includes(date.getHours());
     }
 
-    let createBranch = createBranchTime && (function unique(branchName) {
+    let createBranch = true && (function unique(timer) {
+
+      //取得分支编号
+      timer = true && (function(sysmbol= "") {
+          let timestamp = new Date(Date.now());
+          function toNum (num) {
+            return num < 9 ? '0' + num: num;
+          }
+          let date = (timestamp.getFullYear()) + sysmbol +
+                (toNum(timestamp.getMonth() + 4)) + sysmbol +
+                (toNum(timestamp.getDate()+(++i))) + sysmbol;
+                console.log(date)
+                return date;
+      }());
+
       until.readFileAsync(saveFile).then(function(data, getFileData = null) {
         try {
             getFileData = JSON.parse(data);
@@ -36,35 +49,20 @@ let deployServer = http.createServer(function(request, response) {
           } catch(e) {
             getFileData = {}
         }
-        return Promise.resolve(getFileData)
+        return Promise.resolve(getFileData, timer)
       }).then(function(getFileData){
-        console.log(getFileData, 'getFileData')
         for(var attr in getFileData) {
-          if(getFileData[attr] == branchName) {
+          if(getFileData[attr] == timer) {
             res = true;
           } else {
             res = false;
           }
         }
-        getFileData['index'+ [index++]] = branchName;
-        console.log(getFileData,'getFileData')
-        branchName = JSON.stringify(getFileData);
-        until.writeFileAsync(saveFile, branchName);
+        getFileData['release/'+ timer] = timer;
+        timer = JSON.stringify(getFileData);
+        until.writeFileAsync(saveFile, timer);
         return Promise.resolve(res)
       }).then(function(res) {
-
-        //取得分支编号
-        let timer = true && (function(sysmbol= "") {
-            let timestamp = new Date(Date.now());
-            function toNum (num) {
-              return num < 9 ? '0' + num: num;
-            }
-            let date = (timestamp.getFullYear()) + sysmbol +
-                  (toNum(timestamp.getMonth() + 4)) + sysmbol +
-                  (toNum(timestamp.getDate()+(++i))) + sysmbol;
-                  console.log(date)
-                  return date;
-        }());
 
         //创建分支编号命令，并且推送
         let command = (function(command) {
@@ -100,6 +98,6 @@ let deployServer = http.createServer(function(request, response) {
     response.end('yes');
 
   }
-}
+})
 
 deployServer.listen(9999)
